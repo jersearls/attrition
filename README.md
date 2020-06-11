@@ -1,6 +1,8 @@
 # Attrition
 
-**TODO: Add description**
+Remove HTML attributes used in testing and QA from your production elixir markup.
+
+test |> attrition |> deploy
 
 ## Installation
 
