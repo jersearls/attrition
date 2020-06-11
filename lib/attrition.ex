@@ -1,18 +1,36 @@
 defmodule Attrition do
-  @moduledoc """
-  Documentation for Attrition.
-  """
+  @moduledoc false
 
-  @doc """
-  Hello world.
+  defmacro __using__(_opts) do
+    if configured?() do
+      quoted_helpers()
+    else
+      quoted_noop_helpers()
+    end
+  end
 
-  ## Examples
+  defp configured? do
+    :attrition
+    |> Application.get_env(:data_qa)
+    |> enabled?
+  end
 
-      iex> Attrition.hello()
-      :world
+  defp enabled?(:enabled), do: true
+  defp enabled?(_), do: false
 
-  """
-  def hello do
-    :world
+  defp quoted_noop_helpers do
+    quote do
+      alias Attrition
+
+      def data_qa(_), do: ""
+    end
+  end
+
+  defp quoted_helpers do
+    quote do
+      alias Attrition
+
+      def data_qa(value), do: "data-qa=#{value}"
+    end
   end
 end
