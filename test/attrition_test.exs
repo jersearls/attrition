@@ -4,7 +4,7 @@ defmodule AttritionTest do
 
   describe "data_qa_string/1" do
     test "with string value, returns data_qa value escaped string" do
-      assert Attrition.data_qa_string("test") == {:safe, "data-qa=\"test\""}
+      assert Attrition.data_qa_string("test") == {:safe, "data-qa=\"test\" "}
     end
 
     test "with non-string values, raises fn clause errors" do

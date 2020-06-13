@@ -27,7 +27,7 @@ defmodule Attrition do
 
   @spec data_qa_string(String.t()) :: {:safe, String.t()}
   def data_qa_string(value) when is_binary(value) do
-    {:safe, ~s(data-qa="#{value}")}
+    {:safe, ~s(data-qa="#{value}" )}
   end
 
   def do_quoted_data_qa_fn() do
