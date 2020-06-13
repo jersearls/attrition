@@ -18,6 +18,11 @@ defmodule Attrition do
     end
   end
 
+  @spec do_quoted_data_qa_fn :: Macro.t()
+  def do_quoted_data_qa_fn do
+    if configured?(), do: quoted_data_qa(), else: quoted_noop_data_qa()
+  end
+
   @spec configured? :: boolean()
   def configured? do
     :attrition
@@ -28,10 +33,6 @@ defmodule Attrition do
   @spec data_qa_string(String.t()) :: {:safe, String.t()}
   def data_qa_string(value) when is_binary(value) do
     {:safe, ~s(data-qa="#{value}" )}
-  end
-
-  def do_quoted_data_qa_fn() do
-    if configured?(), do: quoted_data_qa(), else: quoted_noop_data_qa()
   end
 
   defp enabled?(:enabled), do: true
