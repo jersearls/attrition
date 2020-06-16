@@ -2,9 +2,13 @@ defmodule AttritionTest do
   use ExUnit.Case
   use Attrition
 
+  doctest Attrition
+
   describe "data_qa_string/1" do
     test "with string value, returns data_qa value escaped string" do
-      assert Attrition.data_qa_string("test") == {:safe, "data-qa=\"test\" "}
+      test_value = "baz-qux"
+      assert {:safe, escaped_string} = Attrition.data_qa_string(test_value)
+      assert EEx.eval_string(escaped_string) == "data-qa=\"#{test_value}\" "
     end
 
     test "with non-string values, raises fn clause errors" do
