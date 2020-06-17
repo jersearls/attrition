@@ -16,8 +16,7 @@ defmodule Attrition.MixProject do
 
   defp description do
     """
-    Attrition provides the ability to display specific data HTML attributes
-    based on the configuration of your mix environment.
+    Selectively display HTML data attributes depending on mix environment.
     """
   end
 
