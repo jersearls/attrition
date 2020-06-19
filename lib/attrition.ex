@@ -121,85 +121,84 @@ defmodule Attrition do
 
   @callback data_qa(value :: any()) :: String.t() | {:safe, String.t()}
 
+  @configuration_module Application.get_env(:attrition, :module, Attrition.NoOp)
+
   @type safe_string :: {:safe, String.t()}
 
   @doc """
-  Generates a function definition based on the mix env
-  configuration.
+  Injects a function definition based on the mix env
+  configuration module that is passed.
   No arguments are given.
-  This function is useful by defining helper functions
-  once at compile-time rather than checking for configuration
+
+  The macro defines helper functions once at
+  compile-time rather than checking for configuration
   with each function call.
-  The function defs generated are overrideable.
+
+  The functions generated are overrideable.
   """
   @spec __using__([]) :: Macro.t()
   defmacro __using__([]) do
-    quoted_data_qa_fn = do_quoted_data_qa_fn()
-
     quote do
-      @behaviour Attrition
-
       alias Attrition
 
+      @behaviour Attrition
+
       @impl Attrition
-      unquote(quoted_data_qa_fn)
+      def data_qa(value) do
+        configuration_module().data_qa(value)
+      end
+
+      @impl Attrition
+      def data_test(value) do
+        configuration_module().data_test(value)
+      end
 
       defoverridable Attrition
     end
   end
 
-  @doc """
-  Checks if mix environment is configured to enable Attirtion functions.
-  Otherwise, returns noop quoted function def.
-  """
-  @spec do_quoted_data_qa_fn :: Macro.t()
-  def do_quoted_data_qa_fn do
-    if configured?(), do: quoted_data_qa(), else: quoted_noop_data_qa()
-  end
-
-  @doc """
-  Returns boolean value depending on whether data attr is enabled or not.
-  Example configuration:
-  ```elixir
-  config :attrition, Attrition
-    attrs: [
-      data_qa: :enabled
-    ]
-  ```
-  """
-  @spec configured? :: boolean()
-  def configured? do
-    :attrition
-    |> Application.get_env(:data_qa)
-    |> enabled?
-  end
+  @spec configuration_module :: atom()
+  def configuration_module, do: @configuration_module
 
   @doc """
   Returns :safe HTML string that has interior quotes of interpolated
   value escaped with whitespace padding after value.
+
+  For use in non-production environments.
   """
-  @spec data_qa_string(String.t()) :: safe_string()
-  def data_qa_string(value) when is_binary(value) do
-    {:safe, ~s(data-qa="#{value}" )}
-  end
+  @spec data_qa(String.t()) :: safe_string()
+  def data_qa(value), do: {:safe, ~s(data-qa="#{value}" )}
 
-  @spec enabled?(atom()) :: boolean()
-  defp enabled?(:enabled), do: true
-  defp enabled?(_), do: false
+  @doc """
+  Returns :safe HTML string that has interior quotes of interpolated
+  value escaped with whitespace padding after value.
 
-  @spec quoted_noop_data_qa :: Macro.t()
-  defp quoted_noop_data_qa do
-    quote do
-      @spec data_qa(any()) :: String.t()
-      def data_qa(_), do: ""
-    end
-  end
+  For use in non-production environments.
+  """
+  @spec data_test(String.t()) :: safe_string()
+  def data_test(value), do: {:safe, ~s(data-test="#{value}" )}
 
-  @spec quoted_data_qa :: Macro.t()
-  defp quoted_data_qa do
-    quote do
-      @spec data_qa(any()) :: safe_string()
-      def data_qa(value), do: Attrition.data_qa_string(value)
-    end
+  defmodule NoOp do
+    @moduledoc """
+    This module returns the noop versions of data functions.
+
+    This is the default functionality for unconfigured or miconfigured
+    environments to prevent sensitive data leaking into production
+    inadvertantly.
+    """
+
+    @doc """
+    Returns empty string regardless of argument.
+    This is the noop function to be utilized in production environments.
+    """
+    @spec data_qa(any()) :: String.t()
+    def data_qa(_value), do: ""
+
+    @doc """
+    Returns empty string regardless of argument.
+    This is the noop function to be utilized in production environments.
+    """
+    @spec data_test(any()) :: String.t()
+    def data_test(_value), do: ""
   end
 end
