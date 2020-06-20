@@ -175,41 +175,39 @@ defmodule Attrition do
 
     @doc """
     Returns :safe HTML string that has interior quotes of interpolated
-    value escaped with whitespace padding after value.
+    string escaped with whitespace padding after string.
     """
     @spec data_qa(String.t()) :: safe_string()
-    def data_qa(value), do: {:safe, ~s(data-qa="#{value}" )}
+    def data_qa(string) when is_binary(string), do: {:safe, ~s(data-qa="#{string}" )}
 
     @doc """
     Returns :safe HTML string that has interior quotes of interpolated
-    value escaped with whitespace padding after value.
+    string escaped with whitespace padding after string.
     """
     @spec data_test(String.t()) :: safe_string()
-    def data_test(value), do: {:safe, ~s(data-test="#{value}" )}
+    def data_test(string) when is_binary(string), do: {:safe, ~s(data-test="#{string}" )}
   end
 
   defmodule Hide do
     @moduledoc """
     `Attrition.Hide` returns the noop versions of data functions, essentially
-    "hiding" them.
+    "hiding" them by returning an empty string into markup.
 
     This is the default functionality for unconfigured or miconfigured
-    environments to prevent sensitive data leaking into production
+    environments, preventing sensitive data from leaking into production
     inadvertantly.
     """
 
     @doc """
     Returns empty string regardless of argument.
-    This is the noop function to be utilized in production environments.
     """
     @spec data_qa(any()) :: String.t()
-    def data_qa(_value), do: ""
+    def data_qa(_), do: ""
 
     @doc """
     Returns empty string regardless of argument.
-    This is the noop function to be utilized in production environments.
     """
     @spec data_test(any()) :: String.t()
-    def data_test(_value), do: ""
+    def data_test(_), do: ""
   end
 end

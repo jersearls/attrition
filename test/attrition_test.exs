@@ -1,63 +1,51 @@
 defmodule AttritionTest do
   use ExUnit.Case
-  use Attrition
+  alias Attrition
 
-  doctest Attrition
-
-  describe "data_qa_string/1" do
-    test "with string value, returns data_qa value escaped string" do
-      test_value = "baz-qux"
-      assert {:safe, escaped_string} = Attrition.data_qa_string(test_value)
-      assert EEx.eval_string(escaped_string) == "data-qa=\"#{test_value}\" "
-    end
-
-    test "with non-string values, raises fn clause errors" do
-      assert_raise(FunctionClauseError, fn ->
-        Attrition.data_qa_string(1)
-      end)
-
-      assert_raise(FunctionClauseError, fn ->
-        Attrition.data_qa_string(:one)
-      end)
+  describe "data_module/0" do
+    test "without a configured env, returns default Hide module" do
+      assert Attrition.data_module() == Attrition.Hide
     end
   end
 
-  describe "configured/0" do
-    setup do
-      on_exit(fn -> data_qa_disabled() end)
+  defmodule RevealTest do
+    alias Attrition.Reveal
+    use ExUnit.Case
+
+    describe "data_qa/1" do
+      test "with string, returns safe tuple with escaped string" do
+        test_value = "baz-qux"
+        assert {:safe, escaped_string} = Reveal.data_qa(test_value)
+        assert EEx.eval_string(escaped_string) == "data-qa=\"#{test_value}\" "
+      end
+
+      test "with non-string values, raises fn clause errors" do
+        assert_raise(FunctionClauseError, fn ->
+          Reveal.data_qa(1)
+        end)
+
+        assert_raise(FunctionClauseError, fn ->
+          Reveal.data_qa(:one)
+        end)
+      end
     end
 
-    test "with no configuration, returns false" do
-      refute Attrition.configured?()
+    describe "data_test/1" do
+      test "with string, returns safe tuple with escaped string" do
+        test_value = "baz-qux"
+        assert {:safe, escaped_string} = Reveal.data_test(test_value)
+        assert EEx.eval_string(escaped_string) == "data-test=\"#{test_value}\" "
+      end
+
+      test "with non-string values, raises fn clause errors" do
+        assert_raise(FunctionClauseError, fn ->
+          Reveal.data_test(1)
+        end)
+
+        assert_raise(FunctionClauseError, fn ->
+          Reveal.data_test(:one)
+        end)
+      end
     end
-
-    test "with configuration, returns true" do
-      data_qa_enabled()
-      assert Attrition.configured?()
-    end
-  end
-
-  describe "do_quoted_data_qa_fn" do
-    setup do
-      on_exit(fn -> data_qa_disabled() end)
-    end
-
-    test "with no data_qa enabled, returns quoted_noop_data_qa/0 AST" do
-      assert Attrition.do_quoted_data_qa_fn() |> Macro.to_string() =~ "def(data_qa(_)"
-    end
-
-    test "with data_qa enabled, returns quoted_data_qa/0 AST" do
-      data_qa_enabled()
-
-      assert Attrition.do_quoted_data_qa_fn() |> Macro.to_string() =~ "def(data_qa(value)"
-    end
-  end
-
-  defp data_qa_enabled do
-    Application.put_env(:attrition, :data_qa, :enabled)
-  end
-
-  defp data_qa_disabled do
-    Application.delete_env(:attrition, :data_qa)
   end
 end
