@@ -56,14 +56,17 @@ value for the `:data_module` key.
 For example:
 
 ```elixir
+#dev.exs
+#run `mix deps.compile attrition --force` after changes
 config :attrition, data_module: Attrition.Reveal
 ```
 
 **Note** After updating your configuration, you must force the Attrition
-dependency to recompile in order to pick up on the configuration change.
+dependency to recompile in order to pick up on the configuration change
+from your application.
 
 ```shell
-mix deps.compile --force
+mix deps.compile attrition --force
 ```
 
 The absence of a configuration, or an invalid configuration will

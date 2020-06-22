@@ -59,7 +59,7 @@ defmodule Attrition do
   dependency to recompile in order to pick up on the configuration change.
 
   ```shell
-  mix deps.compile --force
+  mix deps.compile attrition --force
   ```
 
   The absence of a configuration, or an invalid configuration will
@@ -94,20 +94,20 @@ defmodule Attrition do
 
   Example implementation of the `data_qa` function:
   ```elixir
-    <div <%= data_qa "example-count" %>class="example">
+    <div<%= data_qa "example-count" %>class="example">
   ```
 
   **NOTE**: In the example above, make note of the spacing. Ensure that
-  there is not a space between the closing output capture tag `%>`
-  and the next attribute definition. This will ensure the resulting html
-  is formatted correctly.
+  there is not a space between the element and the opening output capture
+  tag `<%=` as well as the closing output capture tag `%>` and the next
+  attribute definition. This will ensure the resulting html is formatted correctly.
 
-  Example enabled attribute:
+  Example enabled attribute output:
   ```html
   <div data-qa="example-count" class="example">
   ```
 
-  Disabled attribute:
+  Disabled attribute output:
   ```html
   <div class="example">
   ```
