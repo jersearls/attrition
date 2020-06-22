@@ -59,6 +59,13 @@ For example:
 config :attrition, data_module: Attrition.Reveal
 ```
 
+**Note** After updating your configuration, you must force the Attrition
+dependency to recompile in order to pick up on the configuration change.
+
+```shell
+mix deps.compile --force
+```
+
 The absence of a configuration, or an invalid configuration will
 result in no data attributes displayed. 
 
