@@ -80,7 +80,7 @@ defmodule Attrition do
 
   ## Usage
 
-  Once set-up and configuration is complete, using Attrition
+  Once setup and configuration is complete, using Attrition
   provided functions is very straightforward. These functions
   can be invoked at both the view and template. All attrition provided
   functions can also be overridden wherever they are used.
