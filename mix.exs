@@ -6,11 +6,15 @@ defmodule Attrition.MixProject do
       app: :attrition,
       version: "0.0.1",
       elixir: "~> 1.9",
-      build_embedded: Mix.env() == :prod,
-      start_permanent: Mix.env() == :prod,
       description: description(),
       package: package(),
-      deps: deps()
+      deps: deps(),
+      name: "Attrition",
+      source_url: "https://github.com/jersearls/attrition",
+      docs: [
+        main: "Attrition",
+        extras: ["README.md"]
+      ]
     ]
   end
 
