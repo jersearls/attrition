@@ -1,12 +1,11 @@
 defmodule Attrition do
   @moduledoc """
-
   Attrition provides the ability to display specific data HTML attributes
   based on the configuration of your mix environment.
 
-  For example, testing and QA can be performed using the data-qa attribute,
+  For example, testing and QA can be performed using the `data-qa` or `data-test` attribute,
   while these attributes are effectively removed from your production markup.
-  It accomplishes this through the use of a compile time macro that injects
+  Attrition accomplishes this through the use of a compile time macro that injects
   overrideable functions.
 
   If correctly configured and enabled, Attrition provided functions return
@@ -18,7 +17,8 @@ defmodule Attrition do
   The intentional default redaction of test data and attributes reduces the risk
   of scraping or accidentally exposing sensitive data.
 
-  Currently Attrition only supports the `data-qa` HTML attribute.
+  Currently Attrition only supports the `data-qa` and `data-test`
+  HTML attributes.
 
   > develop |> attrition |> deploy
 
@@ -29,7 +29,7 @@ defmodule Attrition do
   ```elixir
   def deps do
     [
-      {:attrition, "~> 0.1.0"}
+      {:attrition, "~> 0.0.1"}
     ]
   end
   ```
@@ -46,17 +46,17 @@ defmodule Attrition do
   ### 1. Environment Configuration
 
   In the configuration file for the environment you wish to render the
-  data-qa attribute, you must enable data-qa. For example:
+  data attributes, you must set the `Attrition.Reveal` module as the
+  value for the `:data_module` key.
+
+  For example:
 
   ```elixir
-  config :attrition, Attrition
-    attrs: [
-      data_qa: :enabled
-    ]
+  config :attrition, data_module: Attrition.Reveal
   ```
 
   The absence of a configuration, or an invalid configuration will
-  result in no attributes displayed.
+  result in no data attributes displayed.
 
   ### 2. `Use` Attrition
 
@@ -65,7 +65,6 @@ defmodule Attrition do
   to be called in both the view and template without needing to
   provide an alias. This implementation provides a simple,
   light-weight interface without additional cognitive load.
-
 
   ```elixir
   # application_web.ex
@@ -81,9 +80,10 @@ defmodule Attrition do
 
   ## Usage
 
-  Once set up and configuration is complete, using Attrition
+  Once setup and configuration is complete, using Attrition
   provided functions is very straightforward. These functions
-  can be invoked at both the view and template.
+  can be invoked at both the view and template. All attrition provided
+  functions can also be overridden wherever they are used.
 
   Example implementation of the `data_qa` function:
   ```elixir
@@ -117,89 +117,97 @@ defmodule Attrition do
 
   Floki.find(html, "[data-qa=example-count]")
   ```
+
+  ### View data-qa elements in the Browser
+  Using a browser extension, such as [data-qa Highlighter](https://chrome.google.com/webstore/detail/data-qa-highlighter/idhhdaefanknhldagkhodblcpifdddcf?hl=en)
+  you can easily view the elements on the page that have the data-qa attribute.
+
+  ![Sample data-qa highlighting](https://lh3.googleusercontent.com/EEJotHEtiJT8VtbXYfb1_kDMOruvRQzsc4fk8kP93AHQnWlweht8OfJ4M8sIgxLEyxZhZ7dmVwU=w640-h400-e365)
   """
 
   @callback data_qa(value :: any()) :: String.t() | {:safe, String.t()}
+  @callback data_test(value :: any()) :: String.t() | {:safe, String.t()}
 
-  @type safe_string :: {:safe, String.t()}
+  @data_module Application.get_env(:attrition, :data_module, Attrition.Hide)
 
   @doc """
-  Generates a function definition based on the mix env
-  configuration.
+  Injects a function definition based on the mix env
+  configuration module that is passed.
   No arguments are given.
-  This function is useful by defining helper functions
-  once at compile-time rather than checking for configuration
+
+  The macro defines helper functions once at
+  compile-time rather than checking for configuration
   with each function call.
-  The function defs generated are overrideable.
+
+  The functions generated are overrideable.
   """
   @spec __using__([]) :: Macro.t()
   defmacro __using__([]) do
-    quoted_data_qa_fn = do_quoted_data_qa_fn()
-
     quote do
       @behaviour Attrition
 
-      alias Attrition
+      @impl Attrition
+      def data_qa(value) do
+        Attrition.data_module().data_qa(value)
+      end
 
       @impl Attrition
-      unquote(quoted_data_qa_fn)
+      def data_test(value) do
+        Attrition.data_module().data_test(value)
+      end
 
       defoverridable Attrition
     end
   end
 
-  @doc """
-  Checks if mix environment is configured to enable Attirtion functions.
-  Otherwise, returns noop quoted function def.
-  """
-  @spec do_quoted_data_qa_fn :: Macro.t()
-  def do_quoted_data_qa_fn do
-    if configured?(), do: quoted_data_qa(), else: quoted_noop_data_qa()
+  @spec data_module :: atom()
+  def data_module, do: @data_module
+
+  defmodule Reveal do
+    @moduledoc """
+    `Attrition.Reveal` returns the "real" versions of data functions,
+    revealing the passed value contents to your markup.
+
+    This functionality is for configured environments only.
+    """
+
+    @type safe_string :: {:safe, String.t()}
+
+    @doc """
+    Returns :safe HTML string that has interior quotes of interpolated
+    string escaped with whitespace padding after string.
+    """
+    @spec data_qa(String.t()) :: safe_string()
+    def data_qa(string) when is_binary(string), do: {:safe, ~s(data-qa="#{string}" )}
+
+    @doc """
+    Returns :safe HTML string that has interior quotes of interpolated
+    string escaped with whitespace padding after string.
+    """
+    @spec data_test(String.t()) :: safe_string()
+    def data_test(string) when is_binary(string), do: {:safe, ~s(data-test="#{string}" )}
   end
 
-  @doc """
-  Returns boolean value depending on whether data attr is enabled or not.
-  Example configuration:
-  ```elixir
-  config :attrition, Attrition
-    attrs: [
-      data_qa: :enabled
-    ]
-  ```
-  """
-  @spec configured? :: boolean()
-  def configured? do
-    :attrition
-    |> Application.get_env(:data_qa)
-    |> enabled?
-  end
+  defmodule Hide do
+    @moduledoc """
+    `Attrition.Hide` returns the noop versions of data functions, essentially
+    "hiding" them by returning an empty string into markup.
 
-  @doc """
-  Returns :safe HTML string that has interior quotes of interpolated
-  value escaped with whitespace padding after value.
-  """
-  @spec data_qa_string(String.t()) :: safe_string()
-  def data_qa_string(value) when is_binary(value) do
-    {:safe, ~s(data-qa="#{value}" )}
-  end
+    This is the default functionality for unconfigured or miconfigured
+    environments, preventing sensitive data from leaking into production
+    inadvertantly.
+    """
 
-  @spec enabled?(atom()) :: boolean()
-  defp enabled?(:enabled), do: true
-  defp enabled?(_), do: false
+    @doc """
+    Returns empty string regardless of argument.
+    """
+    @spec data_qa(any()) :: String.t()
+    def data_qa(_), do: ""
 
-  @spec quoted_noop_data_qa :: Macro.t()
-  defp quoted_noop_data_qa do
-    quote do
-      @spec data_qa(any()) :: String.t()
-      def data_qa(_), do: ""
-    end
-  end
-
-  @spec quoted_data_qa :: Macro.t()
-  defp quoted_data_qa do
-    quote do
-      @spec data_qa(any()) :: safe_string()
-      def data_qa(value), do: Attrition.data_qa_string(value)
-    end
+    @doc """
+    Returns empty string regardless of argument.
+    """
+    @spec data_test(any()) :: String.t()
+    def data_test(_), do: ""
   end
 end
