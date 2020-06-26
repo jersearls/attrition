@@ -56,6 +56,7 @@ value for the `:data_module` key.
 For example:
 
 ```elixir
+# dev.exs or test.exs
 config :attrition, data_module: Attrition.Reveal
 ```
 
