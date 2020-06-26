@@ -94,20 +94,19 @@ defmodule Attrition do
 
   Example implementation of the `data_qa` function:
   ```elixir
-    <div<%= data_qa "example-count" %>class="example">
+    <div<%= data_qa "example-count" %> class="example">
   ```
 
   **NOTE**: In the example above, make note of the spacing. Ensure that
-  there is not a space between the element and the opening output capture
-  tag `<%=` as well as the closing output capture tag `%>` and the next
-  attribute definition. This will ensure the resulting html is formatted correctly.
+  there is not a space between the element `<div` and the opening output capture
+  tag `<%=`. This will ensure the resulting html is formatted correctly.
 
   Example enabled attribute output:
   ```html
   <div data-qa="example-count" class="example">
   ```
 
-  Disabled attribute output:
+  Hidden attribute output:
   ```html
   <div class="example">
   ```
@@ -175,24 +174,24 @@ defmodule Attrition do
     `Attrition.Reveal` returns the "real" versions of data functions,
     revealing the passed value contents to your markup.
 
-    This functionality is for configured environments only.
+    This module is for configured environments only.
     """
 
     @type safe_string :: {:safe, String.t()}
 
     @doc """
     Returns :safe HTML string that has interior quotes of interpolated
-    string escaped with whitespace padding after string.
+    string escaped with prepended whitespace padding.
     """
     @spec data_qa(String.t()) :: safe_string()
-    def data_qa(string) when is_binary(string), do: {:safe, ~s(data-qa="#{string}" )}
+    def data_qa(string) when is_binary(string), do: {:safe, ~s( data-qa="#{string}" )}
 
     @doc """
     Returns :safe HTML string that has interior quotes of interpolated
-    string escaped with whitespace padding after string.
+    string escaped with prepended whitespace padding.
     """
     @spec data_test(String.t()) :: safe_string()
-    def data_test(string) when is_binary(string), do: {:safe, ~s(data-test="#{string}" )}
+    def data_test(string) when is_binary(string), do: {:safe, ~s( data-test="#{string}" )}
   end
 
   defmodule Hide do
@@ -200,8 +199,8 @@ defmodule Attrition do
     `Attrition.Hide` returns the noop versions of data functions, essentially
     "hiding" them by returning an empty string into markup.
 
-    This is the default functionality for unconfigured or miconfigured
-    environments, preventing sensitive data from leaking into production
+    This is the default module for unconfigured or miconfigured
+    environments; preventing sensitive data from leaking into production
     inadvertantly.
     """
 

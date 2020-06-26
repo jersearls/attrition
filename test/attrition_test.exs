@@ -16,7 +16,7 @@ defmodule AttritionTest do
       test "with string, returns safe tuple with escaped string" do
         test_value = "baz-qux"
         assert {:safe, escaped_string} = Reveal.data_qa(test_value)
-        assert EEx.eval_string(escaped_string) == "data-qa=\"#{test_value}\" "
+        assert EEx.eval_string(escaped_string) == " data-qa=\"#{test_value}\""
       end
 
       test "with non-string values, raises fn clause errors" do
@@ -34,7 +34,7 @@ defmodule AttritionTest do
       test "with string, returns safe tuple with escaped string" do
         test_value = "baz-qux"
         assert {:safe, escaped_string} = Reveal.data_test(test_value)
-        assert EEx.eval_string(escaped_string) == "data-test=\"#{test_value}\" "
+        assert EEx.eval_string(escaped_string) == " data-test=\"#{test_value}\""
       end
 
       test "with non-string values, raises fn clause errors" do
