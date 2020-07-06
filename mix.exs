@@ -4,11 +4,13 @@ defmodule Attrition.MixProject do
   def project do
     [
       app: :attrition,
-      version: "0.0.1",
+      version: "0.1.0",
       elixir: "~> 1.9",
       description: description(),
       package: package(),
       deps: deps(),
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       name: "Attrition",
       source_url: "https://github.com/jersearls/attrition",
       docs: [
@@ -20,7 +22,8 @@ defmodule Attrition.MixProject do
 
   defp description do
     """
-    Selectively display HTML data attributes depending on mix environment.
+    Attrition provides the ability to display specific data HTML attributes
+    based on the configuration of your mix environment.
     """
   end
 
