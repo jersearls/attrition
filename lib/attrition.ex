@@ -184,14 +184,14 @@ defmodule Attrition do
     string escaped with prepended whitespace padding.
     """
     @spec data_qa(String.t()) :: safe_string()
-    def data_qa(string) when is_binary(string), do: {:safe, ~s( data-qa="#{string}" )}
+    def data_qa(string) when is_binary(string), do: {:safe, ~s( data-qa="#{string}")}
 
     @doc """
     Returns :safe HTML string that has interior quotes of interpolated
     string escaped with prepended whitespace padding.
     """
     @spec data_test(String.t()) :: safe_string()
-    def data_test(string) when is_binary(string), do: {:safe, ~s( data-test="#{string}" )}
+    def data_test(string) when is_binary(string), do: {:safe, ~s( data-test="#{string}")}
   end
 
   defmodule Hide do
