@@ -33,7 +33,7 @@ Attrition can be installed by adding `attrition` to your list of dependencies in
 ```elixir
 def deps do
   [
-    {:attrition, "~> 0.0.1"}
+    {:attrition, "~> 0.1.0"}
   ]
 end
 ```

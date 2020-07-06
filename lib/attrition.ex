@@ -29,7 +29,7 @@ defmodule Attrition do
   ```elixir
   def deps do
     [
-      {:attrition, "~> 0.0.1"}
+      {:attrition, "~> 0.1.0"}
     ]
   end
   ```
