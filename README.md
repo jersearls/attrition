@@ -15,14 +15,13 @@ overrideable functions.
 If correctly configured and enabled, Attrition provided functions return
 HTML attributes that can be utilized for testing, QA and beyond.
 
-If no cofiguration is present, Attrition provided functions simply return
+If no configuration is present, Attrition provided functions simply return
 an empty string, thus obfuscating their contents in non-configured envrionments.
 
 The intentional default redaction of test data and attributes reduces the risk
 of scraping or accidentally exposing sensitive data.
 
-Currently Attrition only supports the `data-qa` and `data-test`
-HTML attributes.
+Currently Attrition only supports the `data-qa` and `data-test` HTML attributes.
 
 > develop |> attrition |> deploy
 
@@ -94,8 +93,8 @@ light-weight interface without additional cognitive load.
 
 Once setup and configuration is complete, using Attrition
 provided functions is very straightforward. These functions
-can be invoked at both the view and template. All attrition provided
-functions can also be overridden wherever they are used.
+can be invoked in both the view and the template. All attrition
+provided functions can also be overridden wherever they are used.
 
 Example implementation of the `data_qa` function:
 ```elixir
