@@ -1,5 +1,7 @@
 [![Hex docs](http://img.shields.io/badge/hex.pm-docs-green.svg)](https://hexdocs.pm/attrition)
 
+# ! THIS PACKAGE HAS BEEN RETIRED !
+
 # Attrition
 
 > An Elixir Testing and QA helper for use with the Phoenix framework.
@@ -44,6 +46,7 @@ mix deps.get
 ```
 
 ## Setup
+
 Setup for attrition can be accomplished in two easy steps!
 
 ### 1. Environment Configuration
@@ -97,6 +100,7 @@ can be invoked in both the view and the template. All attrition
 provided functions can also be overridden wherever they are used.
 
 Example implementation of the `data_qa` function:
+
 ```elixir
   <div<%= data_qa "example-count" %> class="example">
 ```
@@ -106,22 +110,27 @@ there is not a space between the element `<div` and the opening output capture
 tag `<%=`. This will ensure the resulting html is formatted correctly.
 
 Example enabled attribute output:
+
 ```html
-<div data-qa="example-count" class="example">
+<div data-qa="example-count" class="example"></div>
 ```
 
 Hidden attribute output:
+
 ```html
-<div class="example">
+<div class="example"></div>
 ```
 
 ## Testing and Developing with data attributes
+
 ### Find the data-qa attribute value using Floki
+
 [Floki](https://hex.pm/packages/floki) is a simple HTML parser that
 can quickly traverse HTML nodes. You can read more about Floki
 [here](https://hexdocs.pm/floki/Floki.html).
 
 Finding your data-qa attribute with Floki example
+
 ```elixir
 {:ok, html} = Floki.parse_document(html)
 
@@ -129,6 +138,7 @@ Floki.find(html, "[data-qa=example-count]")
 ```
 
 ### View data-qa elements in the Browser
+
 Using a browser extension, such as [data-qa Highlighter](https://chrome.google.com/webstore/detail/data-qa-highlighter/idhhdaefanknhldagkhodblcpifdddcf?hl=en)
 you can easily view the elements on the page that have the data-qa attribute.
 
